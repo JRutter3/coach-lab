@@ -1,0 +1,51 @@
+/* styles.css */
+
+.app-layout {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden
+}
+
+.tool-palette {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-content: flex-start;
+  width: 200px;
+  flex-shrink: 0;
+  gap: 8px;
+  padding: 12px;
+  background-color: #1e1e1e;
+  border-right: 1px solid #333
+}
+
+/* Base button layouts */
+.tool-btn {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 8px;
+  flex: 1 1 75px;
+  min-width: 40px;
+  height: 40px;
+  cursor: pointer;
+  border-radius: 6px;
+  padding: 0 10px;
+  color: #fff;
+  transition: background-color 0.2s ease;
+}
+
+/* Static hover effects */
+.tool-btn:hover {
+  background-color: #3d3d3d;
+}
+
+.canvas-workspace {
+  width: 90%;
+  height: 90%;
+  background-color: #ffffff;
+  border-radius: 4px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+  cursor: crosshair;
+}

@@ -1,0 +1,3 @@
+[db_settings]
+db_url=":memory:"
+db_type="sqlite"

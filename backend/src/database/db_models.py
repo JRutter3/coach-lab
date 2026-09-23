@@ -29,8 +29,9 @@ class User(Base):
         primary_key=True,
         default=lambda: str(ulid.ulid())
     )
-    name: Mapped[str] = mapped_column(String(255))
-    email: Mapped[str] = mapped_column(String(255))
+    first_name: Mapped[str] = mapped_column(String(255))
+    last_name: Mapped[str] = mapped_column(String(255))
+    email: Mapped[str] = mapped_column(String(255), unique=True, nullable=False)
 
 
 class Organization(Base):

@@ -10,7 +10,7 @@ class SQLiteConfig(BaseSettings):
 
     @property
     def cnn_str(self) -> str:
-        return "sqlite+aiosqlite:///{self.db_url}"
+        return f"sqlite+aiosqlite:///{self.db_url}"
 
 class APIConfig(BaseSettings):
     db_settings: SQLiteConfig = Field(discriminator="db_type")

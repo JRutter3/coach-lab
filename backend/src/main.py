@@ -1,6 +1,6 @@
 import uvicorn
-from api.canvas_routes import canvas
 from api.lifespan import app_lifespan
+from api.routes import canvas_router, user_router
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -15,7 +15,8 @@ def get_application() -> FastAPI:
         allow_methods=["*"],
         allow_headers=["*"],
     )
-    app.include_router(canvas)
+    app.include_router(canvas_router)
+    app.include_router(user_router)
     return app
 
 

@@ -1,20 +1,17 @@
-from typing import Annotated
+from fastapi import APIRouter
+from sqlalchemy import text
 
 from api.api_models import CanvasSubmission
-from api.dependencies import db_session
-from fastapi import APIRouter, Depends
-from sqlalchemy import text
-from sqlalchemy.ext.asyncio import AsyncSession
+from api.dependencies import DBSession
 
 canvas_router = APIRouter(
     tags=["Canvas Routes"],
     prefix="/api/v1/canvas-drawing",
-    dependencies=[Depends(db_session)]
 )
 
 @canvas_router.get("/count")
 async def get_row_count(
-    session: Annotated[AsyncSession, Depends(db_session)]
+    session: DBSession
 ) -> int:
     """Post the passed canvas to the database"""
     row_count = await session.execute(text("SELECT COUNT(*) FROM canvases"))
@@ -24,7 +21,7 @@ async def get_row_count(
 @canvas_router.post("/")
 async def post_canvas(
     canvas_data: CanvasSubmission,
-    session: Annotated[AsyncSession, Depends(db_session)]
+    session: DBSession,
 ) -> str:
     """Post the passed canvas to the database"""
     print("Hello world")

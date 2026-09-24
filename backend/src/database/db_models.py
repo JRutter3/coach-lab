@@ -4,7 +4,16 @@ from typing import Any
 
 import ulid
 from api.api_models import CanvasTemplateEnum
-from sqlalchemy import JSON, CheckConstraint, DateTime, ForeignKey, String
+from sqlalchemy import (
+    JSON,
+    CheckConstraint,
+    DateTime,
+    ForeignKey,
+    ForeignKeyConstraint,
+    String,
+    UniqueConstraint,
+    func,
+)
 from sqlalchemy import Enum as DBEnum
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
@@ -41,8 +50,8 @@ class Organization(Base):
         primary_key=True,
         default=lambda: str(ulid.ulid())
     )
-    name: Mapped[str] = mapped_column(String(100))
-    created_at: Mapped[datetime] = mapped_column(DateTime())
+    name: Mapped[str] = mapped_column(String(100), unique=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(), server_default=func.now())
 
 
 class Group(Base):
@@ -53,15 +62,28 @@ class Group(Base):
         default=lambda: str(ulid.ulid())
     )
     name: Mapped[str] = mapped_column(String(100))
-    created_at: Mapped[datetime] = mapped_column(DateTime())
+    org_id: Mapped[str] = mapped_column(ForeignKey("orgs.id"))
+    created_at: Mapped[datetime] = mapped_column(DateTime(), server_default=func.now())
+    __table_args__ = (
+        UniqueConstraint("name", "org_id"),
+    )
 
 
 class GroupMembership(Base):
     __tablename__ = "group_membership"
     user_id: Mapped[str] = mapped_column(ForeignKey("app_users.id"), primary_key=True)
     group_id: Mapped[str] = mapped_column(ForeignKey("groups.id"), primary_key=True)
+    org_id: Mapped[str] = mapped_column(ForeignKey("orgs.id"), nullable=False)
     role: Mapped[GroupRoleEnum] = mapped_column(
         DBEnum(GroupRoleEnum), default=GroupRoleEnum.MEMBER
+    )
+
+    __table_args__ = (
+        ForeignKeyConstraint(
+            ["group_id", "org_id"],
+            ["groups.id", "groups.org_id"],
+            name="fk_group_membership_group_org"
+        ),
     )
     
 

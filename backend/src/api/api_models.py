@@ -1,15 +1,25 @@
 """
 API Models showing what we expect from the front-end
 """
+########################################################################
+# NOTE: Pydantic model attribue name MUST match database column names! #
+########################################################################
 
+import datetime as dt
 from enum import StrEnum, auto
 from typing import Annotated, Literal
 
-from pydantic import BaseModel, BeforeValidator, EmailStr, Field
+from pydantic import AwareDatetime, BaseModel, BeforeValidator, EmailStr, Field
 
 type LowercaseEmail = Annotated[
     EmailStr,
     BeforeValidator(lambda v: v.lower() if isinstance(v, str) else v),
+]
+
+
+type CoercedUTCDatetime = Annotated[
+    AwareDatetime,
+    BeforeValidator(lambda d: d.replace(tzinfo=dt.timezone.utc) if isinstance(d, dt.datetime) else d)
 ]
 
 
@@ -50,14 +60,28 @@ class CanvasSubmission(BaseModel):
 class UserSubmission(BaseModel):
     first_name: str
     last_name: str
-    e_mail: LowercaseEmail
+    email: LowercaseEmail
 
 
 class StoredUser(UserSubmission):
-    user_id: str
+    id: str
 
 
 class UserUpdate(BaseModel):
     first_name: str | None = None
     last_name: str | None = None
-    e_mail: LowercaseEmail | None = None
+    email: LowercaseEmail | None = None
+
+
+##### Organization Models #####
+class OrgSubmission(BaseModel):
+    name: str
+
+
+class StoredOrg(OrgSubmission):
+    id: str
+    created_at: CoercedUTCDatetime
+
+
+class OrgUpdate(BaseModel):
+    name: str | None  # Because this is the only attribute, it can't be none...

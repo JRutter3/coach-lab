@@ -4,14 +4,29 @@ from contextlib import asynccontextmanager
 from typing import Any, Protocol
 
 from api.api_models import (
+    CanvasSubmission,
+    GroupMembershipSubmission,
+    GroupSubmission,
+    GroupUpdate,
     OrgSubmission,
     OrgUpdate,
+    StoredCanvas,
+    StoredGroup,
     StoredOrg,
     StoredUser,
+    UserRoleEnum,
     UserSubmission,
     UserUpdate,
 )
-from database.db_models import Base, Group, Organization, User
+from database.db_models import (
+    Base,
+    Canvas,
+    Group,
+    GroupMembership,
+    Organization,
+    OrgMembership,
+    User,
+)
 from sqlalchemy import event, select
 from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, create_async_engine
 
@@ -70,18 +85,12 @@ async def write_user_to_database(api_user: UserSubmission, db_session: AsyncSess
     )
     db_session.add(new_user)
     await db_session.flush()
-    return StoredUser.model_validate(
-        new_user,
-        from_attributes=True
-    )
+    return StoredUser.model_validate(new_user, from_attributes=True)
 
 async def get_user_from_database(user_id: str, db_session: AsyncSession) -> StoredUser:
     """Get the user with the passed ID from the database."""
     db_user = await _get_raw_user(user_id, db_session)
-    return StoredUser.model_validate(
-        db_user,
-        from_attributes=True
-    )
+    return StoredUser.model_validate(db_user, from_attributes=True)
 
 async def query_users_by_email(email: str, db_session: AsyncSession) -> StoredUser:
     """Get the user with the passed email from the database."""
@@ -106,11 +115,7 @@ async def update_user_in_database(
     user.last_name = user_update.last_name or user.last_name
     user.email = user_update.email or user.email
     await db_session.flush()
-
-    return StoredUser.model_validate(
-        user,
-        from_attributes=True
-    )
+    return StoredUser.model_validate(user, from_attributes=True)
 
 ##### Organization Table Operations #####
 async def write_org_to_database(
@@ -121,10 +126,7 @@ async def write_org_to_database(
     new_org = Organization(name=org.name)
     db_session.add(new_org)
     await db_session.flush()
-    return StoredOrg.model_validate(
-        new_org,
-        from_attributes=True
-    )
+    return StoredOrg.model_validate(new_org, from_attributes=True)
 
 async def _get_raw_org(
     org_id: str,
@@ -142,20 +144,14 @@ async def get_org_from_database(
     db_session: AsyncSession,
 ) -> StoredOrg:
     raw_org = await _get_raw_org(org_id, db_session)
-    return StoredOrg.model_validate(
-        raw_org,
-        from_attributes=True
-    )
+    return StoredOrg.model_validate(raw_org, from_attributes=True)
 
 async def get_all_orgs_from_database(
     db_session: AsyncSession,
 ) -> list[StoredOrg]:
     stmt = select(*Organization.__table__.columns)
     result = [
-        StoredOrg.model_validate(
-            org,
-            from_attributes=True
-        )
+        StoredOrg.model_validate(org, from_attributes=True)
         for org in (await db_session.execute(stmt))
     ]
     return result
@@ -171,7 +167,136 @@ async def update_org_in_database(
         raise DataNotFoundError(f"No organization with id={org_id} found.")
     raw_org.name = org_update.name or raw_org.name
     await db_session.flush()
-    return StoredOrg.model_validate(
-        raw_org,
-        from_attributes=True
+    return StoredOrg.model_validate(raw_org, from_attributes=True)
+
+##### Group table operations #####
+async def write_group_to_database(
+    group: GroupSubmission,
+    db_session: AsyncSession
+) -> StoredGroup:
+    """Writes a new group to the database."""
+    new_group = Group(
+        name=group.name,
+        org_id=group.org_id,
     )
+
+    db_session.add(new_group)
+    await db_session.flush()
+    return StoredGroup.model_validate(new_group, from_attributes=True)
+
+async def _get_raw_group(group_id:str, db_session: AsyncSession) -> Group:
+    group = await db_session.get(Group, group_id)
+    if group is None:
+        raise DataNotFoundError(f"No group with id {group_id} found.")
+    return group
+
+async def get_group_from_database(
+    group_id: str,
+    db_session: str,
+) -> StoredGroup:
+    """Get a group from its ID from the database."""
+    group = await _get_raw_group(group_id, db_session)
+    return StoredGroup.model_validate(group, from_attributes=True)
+
+async def query_groups_by_org(
+    org_id: str,
+    db_session: AsyncSession
+) -> list[StoredGroup]:
+    """Query groups by org_id."""
+    stmt = select(*Group.__table__.columns).where(Group.org_id == org_id)
+
+    return [
+        StoredGroup.model_validate(group, from_attributes=True)
+        for group in await db_session.execute(stmt)
+    ]
+
+async def update_group_in_database(
+    group_id: str,
+    group_update: GroupUpdate,
+    db_session: AsyncSession,
+) -> StoredGroup:
+    """Update a group to match the group updates."""
+    group = await _get_raw_group(group_id, db_session)
+    group.org_id = group_update.group_id or group.org_id
+    group.name = group_update.name or group.name
+
+    await db_session.flush()
+    return StoredGroup.model_validate(group, from_attributes=True)
+
+##### Group Membership Operations #####
+async def write_group_membership(
+    group_id: str,
+    group_submission: GroupMembershipSubmission,
+    db_session: AsyncSession,
+) -> str:
+    """Write membership of a user into a group."""
+    group_membership = GroupMembership(
+        user_id=group_submission.user_id,
+        group_id=group_id,
+        role=group_submission.role,
+    )
+    db_session.add(group_membership)
+    await db_session.flush()
+    return "User successfully added to group."
+
+async def write_org_membership(
+    user_id: str,
+    org_id: str,
+    user_role: UserRoleEnum,
+    db_session: AsyncSession,
+) -> str:
+    org_membership = OrgMembership(
+        user_id=user_id,
+        org_id=org_id,
+        role=user_role,
+    )
+
+    db_session.add(org_membership)
+    await db_session.flush()
+    return "User successfully added to org."
+
+async def delete_group_member(
+    group_id: str,
+    user_id: str,
+    db_session: AsyncSession,
+) -> str:
+    target_member = await db_session.get(GroupMembership, (user_id, group_id))
+    if target_member is None:
+        raise DataNotFoundError(
+            f"No membership between user {user_id} and group {group_id}"
+        )
+
+    await db_session.delete(target_member)
+    return f"Group: {group_id}, Member: {user_id} mapping deleted."
+
+
+##### Canvas Operations #####
+async def write_canvas_to_database(
+    canvas: CanvasSubmission,
+    db_session: AsyncSession
+) -> StoredCanvas:
+    """Add a new canvas to the database."""
+    new_canvas = Canvas(
+        name=canvas.name,
+        template=canvas.template,
+        data=canvas.data.model_dump(),
+        owner_id=canvas.owner_id,
+        visibility=canvas.visibility,
+        group_id=canvas.group_id,
+        org_id=canvas.org_id,
+    )
+
+    db_session.add(new_canvas)
+    await db_session.flush()
+    return StoredCanvas.model_validate(new_canvas, from_attributes=True)
+
+async def get_canvas_from_database(
+    canvas_id: str,
+    db_session: AsyncSession,
+) -> StoredCanvas:
+    """Get the canvas from the database."""
+    resp = await db_session.get(Canvas, canvas_id)
+    if resp is None:
+        raise DataNotFoundError(f"No canvas with ID {canvas_id} found.")
+
+    return StoredCanvas.model_validate(resp, from_attributes=True)

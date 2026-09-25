@@ -23,10 +23,19 @@ type CoercedUTCDatetime = Annotated[
 ]
 
 
+class UserRoleEnum(StrEnum):  # We reuse this for groups and orgs. Can be separated.
+    MEMBER=auto()
+    ADMIN=auto()
+
 ##### Canvas Models #####
 class CanvasTemplateEnum(StrEnum):
     FULL_HOCKEY_RINK = auto()
     HALF_HOCKEY_RINK = auto()
+
+class CanvasVisibility(StrEnum):
+    PRIVATE=auto()
+    GROUP=auto()
+    ORG=auto()
 
 
 class CanvasShapeEnum(StrEnum):
@@ -50,11 +59,22 @@ class ShapesType(BaseModel):
     location: Coordinates
 
 
-class CanvasSubmission(BaseModel):
-    template:  CanvasTemplateEnum
+class CanvasData(BaseModel):
     lines: list[LinesType]
     shapes: list[ShapesType] = Field(default_factory=list)
 
+class CanvasSubmission(BaseModel):
+    name: str
+    template: CanvasTemplateEnum
+    data: CanvasData
+    visibility: CanvasVisibility
+    owner_id: str
+    group_id: str | None = None
+    org_id: str | None = None
+
+class StoredCanvas(CanvasSubmission):
+    id: str
+    created_at: CoercedUTCDatetime
 
 ##### User Models #####
 class UserSubmission(BaseModel):
@@ -84,4 +104,22 @@ class StoredOrg(OrgSubmission):
 
 
 class OrgUpdate(BaseModel):
-    name: str | None  # Because this is the only attribute, it can't be none...
+    name: str | None = None  # Because this is the only attribute, it can't be none...
+
+
+##### Group Models #####
+class GroupSubmission(BaseModel):
+    name: str
+    org_id: str
+
+class StoredGroup(GroupSubmission):
+    id: str
+    created_at: CoercedUTCDatetime
+
+class GroupUpdate(BaseModel):
+    name: str | None = None
+    org_id: str | None = None
+
+class GroupMembershipSubmission(BaseModel):
+    user_id: str
+    role: UserRoleEnum

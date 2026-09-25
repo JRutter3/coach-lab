@@ -1,15 +1,13 @@
 from datetime import datetime
-from enum import Enum, auto
 from typing import Any
 
 import ulid
-from api.api_models import CanvasTemplateEnum
+from api.api_models import CanvasTemplateEnum, CanvasVisibility, UserRoleEnum
 from sqlalchemy import (
     JSON,
     CheckConstraint,
     DateTime,
     ForeignKey,
-    ForeignKeyConstraint,
     String,
     UniqueConstraint,
     func,
@@ -17,15 +15,6 @@ from sqlalchemy import (
 from sqlalchemy import Enum as DBEnum
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
-
-class GroupRoleEnum(Enum):
-    MEMBER=auto()
-    ADMIN=auto()
-
-class CanvasVisibility(Enum):
-    PRIVATE=auto()
-    GROUP=auto()
-    ORG=auto()
 
 class Base(DeclarativeBase):
     pass
@@ -73,17 +62,8 @@ class GroupMembership(Base):
     __tablename__ = "group_membership"
     user_id: Mapped[str] = mapped_column(ForeignKey("app_users.id"), primary_key=True)
     group_id: Mapped[str] = mapped_column(ForeignKey("groups.id"), primary_key=True)
-    org_id: Mapped[str] = mapped_column(ForeignKey("orgs.id"), nullable=False)
-    role: Mapped[GroupRoleEnum] = mapped_column(
-        DBEnum(GroupRoleEnum), default=GroupRoleEnum.MEMBER
-    )
-
-    __table_args__ = (
-        ForeignKeyConstraint(
-            ["group_id", "org_id"],
-            ["groups.id", "groups.org_id"],
-            name="fk_group_membership_group_org"
-        ),
+    role: Mapped[UserRoleEnum] = mapped_column(
+        DBEnum(UserRoleEnum), default=UserRoleEnum.MEMBER
     )
     
 
@@ -91,15 +71,17 @@ class OrgMembership(Base):
     __tablename__ = "org_membership"
     user_id: Mapped[str] = mapped_column(ForeignKey("app_users.id"), primary_key=True)
     org_id: Mapped[str] = mapped_column(ForeignKey("orgs.id"), primary_key=True)
+    role: Mapped[UserRoleEnum] = mapped_column(DBEnum(UserRoleEnum), default=UserRoleEnum.MEMBER)
 
 
-class CanvasTable(Base):
+class Canvas(Base):
     __tablename__ = "canvases"
     id: Mapped[str] = mapped_column(
         String(26),
         primary_key=True,
         default=lambda: str(ulid.ulid())
     )
+    name: Mapped[str] = mapped_column(String(255))
     template: Mapped[CanvasTemplateEnum] = mapped_column(
         DBEnum(CanvasTemplateEnum),
         nullable=False
@@ -112,8 +94,7 @@ class CanvasTable(Base):
     )
     group_id: Mapped[str] = mapped_column(ForeignKey("groups.id"), nullable=True)
     org_id: Mapped[str] = mapped_column(ForeignKey("orgs.id"), nullable=True)
-    created_at: Mapped[datetime] = mapped_column(DateTime())
-    updated_at: Mapped[datetime] = mapped_column(DateTime())
+    created_at: Mapped[datetime] = mapped_column(DateTime(), server_default=func.now())
 
     __table_args__ = (
         CheckConstraint(

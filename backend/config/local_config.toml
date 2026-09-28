@@ -1,3 +1,3 @@
 [db_settings]
-db_url=":memory:"
+db_url="./backend/data/coach-lab.db"
 db_type="sqlite"

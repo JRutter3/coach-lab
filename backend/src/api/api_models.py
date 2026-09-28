@@ -72,9 +72,20 @@ class CanvasSubmission(BaseModel):
     group_id: str | None = None
     org_id: str | None = None
 
+class CanvasUpdate(BaseModel):
+    name: str | None = None
+    template: CanvasTemplateEnum | None = None
+    data: CanvasData | None = None
+    visibility: CanvasVisibility | None = None
+    owner_id: str | None = None
+    group_id: str | None = None
+    org_id: str | None = None
+
+
 class StoredCanvas(CanvasSubmission):
     id: str
     created_at: CoercedUTCDatetime
+
 
 ##### User Models #####
 class UserSubmission(BaseModel):

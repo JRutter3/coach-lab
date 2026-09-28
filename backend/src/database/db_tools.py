@@ -5,6 +5,7 @@ from typing import Any, Protocol
 
 from api.api_models import (
     CanvasSubmission,
+    CanvasUpdate,
     GroupMembershipSubmission,
     GroupSubmission,
     GroupUpdate,
@@ -203,11 +204,11 @@ async def query_groups_by_org(
     db_session: AsyncSession
 ) -> list[StoredGroup]:
     """Query groups by org_id."""
-    stmt = select(*Group.__table__.columns).where(Group.org_id == org_id)
+    stmt = select(Group).where(Group.org_id == org_id)
 
     return [
         StoredGroup.model_validate(group, from_attributes=True)
-        for group in await db_session.execute(stmt)
+        for group in await db_session.scalars(stmt)
     ]
 
 async def update_group_in_database(
@@ -290,13 +291,46 @@ async def write_canvas_to_database(
     await db_session.flush()
     return StoredCanvas.model_validate(new_canvas, from_attributes=True)
 
+async def _get_raw_canvas(canvas_id: str, db_session: AsyncSession) -> Canvas:
+    canvas = await db_session.get(Canvas, canvas_id)
+    if canvas is None:
+        raise DataNotFoundError(f"No such canvas with ID: {canvas_id}. Found")
+    return canvas
+
 async def get_canvas_from_database(
     canvas_id: str,
     db_session: AsyncSession,
 ) -> StoredCanvas:
     """Get the canvas from the database."""
-    resp = await db_session.get(Canvas, canvas_id)
-    if resp is None:
-        raise DataNotFoundError(f"No canvas with ID {canvas_id} found.")
-
+    resp = await _get_raw_canvas(canvas_id, db_session)
     return StoredCanvas.model_validate(resp, from_attributes=True)
+
+async def query_canvas_by_owner(
+    owner_id: str,
+    db_session: AsyncSession,
+) -> list[StoredCanvas]:
+    """Query canvases by owner."""
+    stmt = select(Canvas).where(Canvas.owner_id == owner_id.lower())
+    result = [
+        StoredCanvas.model_validate(canvas, from_attributes=True)
+        for canvas in (await db_session.scalars(stmt))
+    ]
+    return result
+
+    
+async def update_canvas_in_database(
+    canvas_id: str,
+    canvas_data: CanvasUpdate,
+    db_session: AsyncSession
+) -> StoredCanvas:
+    """Update the canvas data in the database."""
+    canvas = await _get_raw_canvas(canvas_id, db_session)
+    canvas.name = canvas_data.name or canvas.name
+    canvas.template = canvas_data.template or canvas.template
+    canvas.data = canvas_data.data or canvas.data
+    canvas.owner_id = canvas_data.owner_id or canvas.owner_id
+    canvas.group_id = canvas_data.group_id or canvas.group_id
+    canvas.org_id = canvas_data.org_id or canvas.org_id
+
+    await db_session.flush()
+    return StoredCanvas.model_validate(canvas, from_attributes=True)

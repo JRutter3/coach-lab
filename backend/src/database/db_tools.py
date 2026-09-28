@@ -310,7 +310,7 @@ async def query_canvas_by_owner(
     db_session: AsyncSession,
 ) -> list[StoredCanvas]:
     """Query canvases by owner."""
-    stmt = select(Canvas).where(Canvas.owner_id == owner_id.lower())
+    stmt = select(Canvas).where(Canvas.owner_id == owner_id)
     result = [
         StoredCanvas.model_validate(canvas, from_attributes=True)
         for canvas in (await db_session.scalars(stmt))

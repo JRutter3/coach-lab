@@ -27,6 +27,10 @@ class UserRoleEnum(StrEnum):  # We reuse this for groups and orgs. Can be separa
     MEMBER=auto()
     ADMIN=auto()
 
+
+class MessageResponse(BaseModel):
+    message: str
+
 ##### Canvas Models #####
 class CanvasTemplateEnum(StrEnum):
     FULL_HOCKEY_RINK = auto()
@@ -68,7 +72,6 @@ class CanvasSubmission(BaseModel):
     template: CanvasTemplateEnum
     data: CanvasData
     visibility: CanvasVisibility
-    owner_id: str
     group_id: str | None = None
     org_id: str | None = None
 
@@ -77,7 +80,6 @@ class CanvasUpdate(BaseModel):
     template: CanvasTemplateEnum | None = None
     data: CanvasData | None = None
     visibility: CanvasVisibility | None = None
-    owner_id: str | None = None
     group_id: str | None = None
     org_id: str | None = None
 
@@ -92,10 +94,14 @@ class UserSubmission(BaseModel):
     first_name: str
     last_name: str
     email: LowercaseEmail
+    password: str
 
 
-class StoredUser(UserSubmission):
+class StoredUser(BaseModel):
     id: str
+    first_name: str
+    last_name: str
+    email: LowercaseEmail
 
 
 class UserUpdate(BaseModel):
@@ -134,3 +140,9 @@ class GroupUpdate(BaseModel):
 class GroupMembershipSubmission(BaseModel):
     user_id: str
     role: UserRoleEnum
+
+
+##### Login Models #####
+class LoginRequest(BaseModel):
+    email: EmailStr
+    password: str

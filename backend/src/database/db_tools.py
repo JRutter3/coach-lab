@@ -82,26 +82,30 @@ async def write_user_to_database(api_user: UserSubmission, db_session: AsyncSess
     new_user = User(
         email=api_user.email,
         first_name=api_user.first_name,
-        last_name=api_user.last_name
+        last_name=api_user.last_name,
+        hashed_password=User.hash_password(api_user.password)
     )
     db_session.add(new_user)
     await db_session.flush()
-    return StoredUser.model_validate(new_user, from_attributes=True)
+    return StoredUser.model_validate(new_user, from_attributes=True, extra="ignore")
 
 async def get_user_from_database(user_id: str, db_session: AsyncSession) -> StoredUser:
     """Get the user with the passed ID from the database."""
     db_user = await _get_raw_user(user_id, db_session)
     return StoredUser.model_validate(db_user, from_attributes=True)
 
-async def query_users_by_email(email: str, db_session: AsyncSession) -> StoredUser:
-    """Get the user with the passed email from the database."""
+async def get_raw_user_by_email(email: str, db_session: AsyncSession) -> User:
     stmt = select(User).where(User.email == email.lower())
     user = await db_session.scalar(stmt)
     if user is None:
         raise DataNotFoundError(f"Could not find user with email: {email}")
+    return user
 
+
+async def query_users_by_email(email: str, db_session: AsyncSession) -> StoredUser:
+    """Get the user with the passed email from the database."""
     return StoredUser.model_validate(
-        user,
+        await get_raw_user_by_email(email, db_session),
         from_attributes=True
     )
 
@@ -300,9 +304,14 @@ async def _get_raw_canvas(canvas_id: str, db_session: AsyncSession) -> Canvas:
 async def get_canvas_from_database(
     canvas_id: str,
     db_session: AsyncSession,
+    user_requesting: str,
 ) -> StoredCanvas:
     """Get the canvas from the database."""
     resp = await _get_raw_canvas(canvas_id, db_session)
+    if resp.owner_id != user_requesting:
+        raise PermissionError(
+            f"User {user_requesting} cannot load canvas belonging to {resp.owner_id}"
+        )
     return StoredCanvas.model_validate(resp, from_attributes=True)
 
 async def query_canvas_by_owner(
@@ -321,10 +330,13 @@ async def query_canvas_by_owner(
 async def update_canvas_in_database(
     canvas_id: str,
     canvas_data: CanvasUpdate,
-    db_session: AsyncSession
+    db_session: AsyncSession,
+    updating_user: str,
 ) -> StoredCanvas:
     """Update the canvas data in the database."""
     canvas = await _get_raw_canvas(canvas_id, db_session)
+    if updating_user != canvas.owner_id:
+        raise PermissionError(f"User {updating_user} cannot modify canvas belonging to {canvas.owner_id}")
     canvas.name = canvas_data.name or canvas.name
     canvas.template = canvas_data.template or canvas.template
     canvas.data = canvas_data.data or canvas.data

@@ -15,13 +15,13 @@ CONFIG_ENV_VARIABLE_NAME = "APP_CONFIG_PATH"
 
 
 @cache
-def parse_config(config_path: str | None = None) -> APIConfig:
+def get_config() -> APIConfig:
     """
     Parse the config from the config_path and return an APIConfig object.
     
     If config_path is None, we will look for a path in the CONFIG_ENV_VARIABLE_NAME.
     """
-    config_path = config_path or os.getenv(CONFIG_ENV_VARIABLE_NAME)
+    config_path = os.getenv(CONFIG_ENV_VARIABLE_NAME)
     if config_path is None:
         logger.info("No explicit config path found. Defaulting to /config/local_config.toml")
         path_obj = get_config_folder_path() / "local_config.toml"

@@ -6,32 +6,23 @@ from database.db_tools import (
     write_canvas_to_database,
 )
 from fastapi import APIRouter, HTTPException
-from sqlalchemy import text
 
 from api.api_models import CanvasSubmission, CanvasUpdate, StoredCanvas
-from api.dependencies import DBSession
+from api.dependencies import AuthData, DBSession
 
 canvas_router = APIRouter(
     tags=["Canvas Routes"],
     prefix="/api/v1/canvas-drawing",
 )
 
-@canvas_router.get("/count")
-async def get_row_count(
-    session: DBSession
-) -> int:
-    """Post the passed canvas to the database"""
-    row_count = await session.scalar(text("SELECT COUNT(*) FROM canvases"))
-    print(f"Row count: {row_count}")
-    return row_count
-
 @canvas_router.post("/")
 async def post_canvas(
     canvas_data: CanvasSubmission,
     session: DBSession,
+    user_data: AuthData,
 ) -> StoredCanvas:
     """Post the passed canvas to the database"""
-    return await write_canvas_to_database(canvas_data, session)
+    return await write_canvas_to_database(user_data["email"], canvas_data, session)
 
 @canvas_router.get("/{canvas_id}")
 async def get_canvas(canvas_id: str, db_session: DBSession) -> StoredCanvas:
@@ -43,8 +34,9 @@ async def get_canvas(canvas_id: str, db_session: DBSession) -> StoredCanvas:
     return result
 
 @canvas_router.get("/")
-async def query_canvas(owner_id: str, db_session: DBSession) -> list[StoredCanvas]:
+async def query_canvas(user_data: AuthData, db_session: DBSession) -> list[StoredCanvas]:
     """Query all canvases belonging to a specific user."""
+    owner_id=user_data["id"]
     return await query_canvas_by_owner(owner_id, db_session)
 
 
@@ -52,11 +44,17 @@ async def query_canvas(owner_id: str, db_session: DBSession) -> list[StoredCanva
 async def put_canvas(
     canvas_id: str,
     canvas_update: CanvasUpdate,
+    user_data: AuthData,
     db_session: DBSession
 ) -> StoredCanvas:
     """Update a canvas with the latest data."""
     try:
-        result = await update_canvas_in_database(canvas_id, canvas_update, db_session)
+        result = await update_canvas_in_database(
+            canvas_id,
+            canvas_update,
+            db_session,
+            user_data["id"],
+            )
     except DataNotFoundError:
         raise HTTPException(404, f"No canvas with id: {canvas_id} found.")
 

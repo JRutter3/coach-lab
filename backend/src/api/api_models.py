@@ -9,7 +9,8 @@ import datetime as dt
 from enum import StrEnum, auto
 from typing import Annotated, Literal
 
-from pydantic import AwareDatetime, BaseModel, BeforeValidator, EmailStr, Field
+from pydantic import AwareDatetime, BaseModel, BeforeValidator, EmailStr, Field, ConfigDict
+from pydantic.alias_generators import to_camel
 
 type LowercaseEmail = Annotated[
     EmailStr,
@@ -95,6 +96,11 @@ class UserSubmission(BaseModel):
     last_name: str
     email: LowercaseEmail
     password: str
+    model_config=ConfigDict(
+        alias_generator=to_camel,
+        populate_by_name=True,
+        from_attributes=True,
+    )
 
 
 class StoredUser(BaseModel):

@@ -1,3 +1,8 @@
 [db_settings]
 db_url="./backend/data/coach-lab.db"
 db_type="sqlite"
+
+[jwt_settings]
+secret_key="bananas"
+jwt_algorithm="HS256"
+token_expire_hours=24

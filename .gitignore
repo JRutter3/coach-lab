@@ -24,5 +24,6 @@ dist-ssr
 *.sw?
 
 backend/.venv/*
+backend/data/*
 */__pycache__
 *.pyc

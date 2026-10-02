@@ -9,7 +9,7 @@ from fastapi import APIRouter, HTTPException
 from sqlalchemy.exc import IntegrityError
 
 from api.api_models import StoredUser, UserSubmission, UserUpdate
-from api.dependencies import DBSession
+from api.dependencies import AuthData, DBSession
 
 user_router = APIRouter(prefix="/api/v1/users", tags=["User Endpoints"])
 
@@ -26,10 +26,10 @@ async def post_user(user: UserSubmission, db_session: DBSession) -> StoredUser:
         )
     return resp
 
-
-@user_router.get("/{user_id}")
-async def get_user(user_id: str, db_session: DBSession) -> StoredUser:
+@user_router.get("/me")
+async def get_user(user_data: AuthData, db_session: DBSession) -> StoredUser:
     """Get a user with the given user_id."""
+    user_id = user_data.id
     try:
         resp = await get_user_from_database(user_id, db_session)
     except DataNotFoundError:
@@ -40,7 +40,7 @@ async def get_user(user_id: str, db_session: DBSession) -> StoredUser:
     return resp
 
 
-@user_router.get("/")
+@user_router.get("/")  # TODO: Move this to an admin section where only I can use it.
 async def query_user(email: str, db_session: DBSession) -> StoredUser:
     """Query user table by email address."""
     try:

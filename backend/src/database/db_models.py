@@ -1,6 +1,7 @@
 from datetime import datetime
 from typing import Any
 
+import bcrypt
 import ulid
 from api.api_models import CanvasTemplateEnum, CanvasVisibility, UserRoleEnum
 from sqlalchemy import (
@@ -30,7 +31,14 @@ class User(Base):
     first_name: Mapped[str] = mapped_column(String(255))
     last_name: Mapped[str] = mapped_column(String(255))
     email: Mapped[str] = mapped_column(String(255), unique=True, nullable=False)
+    hashed_password: Mapped[str] = mapped_column(String, nullable=False)
 
+    def verify_password(self, plain_password: str) -> bool:
+        return bcrypt.checkpw(plain_password.encode(), self.hashed_password.encode())
+
+    @staticmethod
+    def hash_password(plain_password: str) -> str:
+        return bcrypt.hashpw(plain_password.encode(), bcrypt.gensalt()).decode("utf-8")
 
 class Organization(Base):
     __tablename__ = "orgs"
@@ -83,13 +91,13 @@ class Canvas(Base):
     )
     name: Mapped[str] = mapped_column(String(255))
     template: Mapped[CanvasTemplateEnum] = mapped_column(
-        DBEnum(CanvasTemplateEnum),
+        DBEnum(CanvasTemplateEnum, values_callable=lambda x: [e.value for e in x]),
         nullable=False
     )
     data: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False)
     owner_id: Mapped[str] = mapped_column(ForeignKey("app_users.id"), nullable=False)
     visibility: Mapped[CanvasVisibility] = mapped_column(
-        DBEnum[CanvasVisibility],
+        DBEnum(CanvasVisibility, values_callable=lambda x: [e.value for e in x]),
         default=CanvasVisibility.PRIVATE
     )
     group_id: Mapped[str] = mapped_column(ForeignKey("groups.id"), nullable=True)

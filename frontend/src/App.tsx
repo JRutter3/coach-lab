@@ -1,26 +1,25 @@
 import './App.css'
-import {useState} from 'react'
-import Canvas from './components/Canvas'
-import Palette from './components/Palette'
+import { BrowserRouter, Routes, Route} from 'react-router-dom';
+import CanvasEditorPage from './features/editor/CanvasEditorPage';
+import LoginPage from './features/login/LoginPage';
+import RegistrationForm from './features/register/RegisterPage';
+import DashboardPage from './features/dashboard/DashboardPage';
+import { AuthProvider } from './components/AuthContext';
 
 
 const App = () => {
-
-  const [activeTool, toolSetter] = useState("brush")
   return (
-    <>
-      <PageHeader />
-      <Palette activeTool={activeTool} toolSetter={toolSetter}/> 
-      <section>
-      <Canvas tool={activeTool} />
-      </section>
-    </>
-  )
+    <AuthProvider>
+      <BrowserRouter>
+        <Routes>
+            <Route path="/" element={<LoginPage/>}/>
+            <Route path="/register" element={<RegistrationForm/>}/>
+            <Route path="/dashboard" element={<DashboardPage/>}/>
+            <Route path="/canvas/:canvasId" element={<CanvasEditorPage canvasId="TEST"/>} />
+        </Routes>
+      </BrowserRouter>
+    </AuthProvider>
+    )
 }
 
-const PageHeader = () => {
-  return (
-  <div><h1>Coach Lab Canvas</h1></div>
-  )
-}
 export default App

@@ -22,13 +22,17 @@ async def post_canvas(
     user_data: AuthData,
 ) -> StoredCanvas:
     """Post the passed canvas to the database"""
-    return await write_canvas_to_database(user_data["email"], canvas_data, session)
+    return await write_canvas_to_database(user_data.id, canvas_data, session)
 
 @canvas_router.get("/{canvas_id}")
-async def get_canvas(canvas_id: str, db_session: DBSession) -> StoredCanvas:
+async def get_canvas(
+    canvas_id: str,
+    db_session: DBSession,
+    user_data: AuthData
+) -> StoredCanvas:
     """Get the canvas from the database by id."""
     try:
-        result = await get_canvas_from_database(canvas_id, db_session)
+        result = await get_canvas_from_database(canvas_id, db_session, user_data.id)
     except DataNotFoundError:
         raise HTTPException(404, f"No canvas with id {canvas_id} found.")
     return result
@@ -36,8 +40,7 @@ async def get_canvas(canvas_id: str, db_session: DBSession) -> StoredCanvas:
 @canvas_router.get("/")
 async def query_canvas(user_data: AuthData, db_session: DBSession) -> list[StoredCanvas]:
     """Query all canvases belonging to a specific user."""
-    owner_id=user_data["id"]
-    return await query_canvas_by_owner(owner_id, db_session)
+    return await query_canvas_by_owner(user_data.id, db_session)
 
 
 @canvas_router.put("/{canvas_id}")
@@ -53,7 +56,7 @@ async def put_canvas(
             canvas_id,
             canvas_update,
             db_session,
-            user_data["id"],
+            user_data.id,
             )
     except DataNotFoundError:
         raise HTTPException(404, f"No canvas with id: {canvas_id} found.")

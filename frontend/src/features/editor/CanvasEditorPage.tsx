@@ -1,22 +1,18 @@
 import '../../App.css'
-import {useState} from 'react'
 import { useParams } from 'react-router-dom'
-import Canvas from './components/Canvas'
-import Palette from './components/Palette'
+import CanvasEditor from './components/CanvasEditor'
+import NavBar from '../../components/NavBar';
 
-const CanvasEditorPage = ( {canvasId}: {canvasId: string}) => {
-  const [activeTool, toolSetter] = useState("brush")
-  // const { canvasId } = useParams();
+const CanvasEditorPage = () => {
+  const { canvasId } = useParams();
   if ( !canvasId ){
     return <div>Error: No canvas ID specified...</div>
   }
   return (
     <>
       <PageHeader />
-      <Palette activeTool={activeTool} toolSetter={toolSetter}/> 
-      <section>
-      <Canvas tool={activeTool} canvasId={canvasId}/>
-      </section>
+      <NavBar />
+      <CanvasEditor canvasId={canvasId}/>
     </>
   )
 }

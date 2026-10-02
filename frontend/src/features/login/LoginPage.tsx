@@ -1,66 +1,18 @@
-import axios from "axios";
-import React, { useState } from "react";
+import LoginForm from "./components/LoginForm";
+import logo from "../../assets/CoachLabLogo.jpeg"
+import "../../App.css"
 
-
-const LoginForm = () => {
-    const [email, setEmail] = useState("")
-    const [password, setPassword] = useState("")
-    const [error, setError] = useState<string | null>(null)
-    const [loading, setLoading] = useState(false);
-
-    const handleSubmit = async (e: React.SubmitEvent) => {
-        e.preventDefault();
-        setLoading(true)
-        setError(null)
-
-        try {
-            const res = await axios.post(
-                "/api/login",
-                { "email": email, "password": password},
-                {
-                    "headers": {"Content-Type": "application/json"},
-                    "withCredentials": true
-                }
-            )
-
-            if (!(res.status === 200)) {
-                setError("Invalid email or password")
-                return
-            }
-
-            window.location.href = "/dashboard"
-        } catch {
-            setError("Something went wrong. Please try again.")
-        } finally {
-            setLoading(false);
-        }
-    }
-
+const LoginPage = () => {
     return (
-        <form onSubmit={handleSubmit}>
-            <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="Email"
-                required
-            />
-            <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="Password"
-                required
-            />
-            { error && <p className="error">{error}</p> }
-            <button type="submit" disabled={loading}>
-                {loading ? "Signing in..." : "Sign in"}
-            </button>
-            <button type="button" onClick={() => window.location.href="/register"}>
-                Sign-Up
-            </button>
-        </form>
+        <div className="login-base">
+            <div className="splash-logo">
+                <img src={logo} width="500"/>
+                <h1><b>COACH</b>LAB</h1>
+                <h2>Collaborative Multi-Sport Whiteboard</h2>
+            </div>
+            <LoginForm />
+        </div>
     )
 }
 
-export default LoginForm
+export default LoginPage

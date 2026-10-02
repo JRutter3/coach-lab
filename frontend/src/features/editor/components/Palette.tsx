@@ -41,6 +41,7 @@ const Palette = ( {activeTool, toolSetter}: PaletteProps ) => {
                 const isActive = tool.id === activeTool
                 return (
                     <button
+                        type="button"
                         key={tool.id}
                         className="tool-btn"
                         onClick={() => handleToolSelect(tool.id)}

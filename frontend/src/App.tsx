@@ -1,31 +1,25 @@
 import './App.css'
 import { BrowserRouter, Routes, Route} from 'react-router-dom';
-// import CanvasEditorPage from './features/editor/CanvasEditorPage';
-import LoginForm from './features/login/LoginPage';
+import CanvasEditorPage from './features/editor/CanvasEditorPage';
+import LoginPage from './features/login/LoginPage';
 import RegistrationForm from './features/register/RegisterPage';
+import DashboardPage from './features/dashboard/DashboardPage';
+import { AuthProvider } from './components/AuthContext';
 
 
 const App = () => {
   return (
-    <BrowserRouter>
-      <Routes>
-          <Route path="/" element={<LoginForm/>}/>
-          <Route path="/register" element={<RegistrationForm/>}/>
-          <Route path="/dashboard" element={<h1>Coming soon!</h1>}/>
-      </Routes>
-    </BrowserRouter>
-  )
+    <AuthProvider>
+      <BrowserRouter>
+        <Routes>
+            <Route path="/" element={<LoginPage/>}/>
+            <Route path="/register" element={<RegistrationForm/>}/>
+            <Route path="/dashboard" element={<DashboardPage/>}/>
+            <Route path="/canvas/:canvasId" element={<CanvasEditorPage canvasId="TEST"/>} />
+        </Routes>
+      </BrowserRouter>
+    </AuthProvider>
+    )
 }
 
 export default App
-
-    {/*
-    <BrowserRouter>
-      <Routes>
-          <Route path="/" element={<LoginForm/>}/>
-          <Route path="/register" element={<RegistrationForm/>}/>
-          <Route path="/dashboard" element={<h1>Coming soon!</h1>}/>
-      </Routes>
-    </BrowserRouter>
-  */}
-  

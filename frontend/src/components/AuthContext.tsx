@@ -17,7 +17,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode}) => {
 
     useEffect(() => {
         axios
-            .get("/api/users/me", {withCredentials: true})
+            .get("/api/v1/users/me", {withCredentials: true})
             .then((res) => {setUser(res.data)})
             .catch(() => {setUser(null)})
             .finally(() => setLoading(false))

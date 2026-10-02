@@ -277,6 +277,7 @@ async def delete_group_member(
 
 ##### Canvas Operations #####
 async def write_canvas_to_database(
+    user_id: str,
     canvas: CanvasSubmission,
     db_session: AsyncSession
 ) -> StoredCanvas:
@@ -285,7 +286,7 @@ async def write_canvas_to_database(
         name=canvas.name,
         template=canvas.template,
         data=canvas.data.model_dump(),
-        owner_id=canvas.owner_id,
+        owner_id=user_id,
         visibility=canvas.visibility,
         group_id=canvas.group_id,
         org_id=canvas.org_id,
@@ -339,8 +340,7 @@ async def update_canvas_in_database(
         raise PermissionError(f"User {updating_user} cannot modify canvas belonging to {canvas.owner_id}")
     canvas.name = canvas_data.name or canvas.name
     canvas.template = canvas_data.template or canvas.template
-    canvas.data = canvas_data.data or canvas.data
-    canvas.owner_id = canvas_data.owner_id or canvas.owner_id
+    canvas.data = canvas_data.data.model_dump() or canvas.data
     canvas.group_id = canvas_data.group_id or canvas.group_id
     canvas.org_id = canvas_data.org_id or canvas.org_id
 

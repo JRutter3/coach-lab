@@ -1,7 +1,8 @@
-import '../../App.css'
+import "./CanvasEditorPage.css"
 import { useParams } from 'react-router-dom'
 import CanvasEditor from './components/CanvasEditor'
 import NavBar from '../../components/NavBar';
+import GlobalHeader from '../../components/Header';
 
 const CanvasEditorPage = () => {
   const { canvasId } = useParams();
@@ -9,17 +10,18 @@ const CanvasEditorPage = () => {
     return <div>Error: No canvas ID specified...</div>
   }
   return (
-    <>
+    <main className="editor">
+      <GlobalHeader />
       <PageHeader />
       <NavBar />
       <CanvasEditor canvasId={canvasId}/>
-    </>
+    </main>
   )
 }
 
 const PageHeader = () => {
   return (
-  <div><h1>Coach Lab Canvas</h1></div>
+  <div className="editor__section-header"><h2>Coach Lab Canvas</h2></div>
   )
 }
 export default CanvasEditorPage

@@ -1,0 +1,16 @@
+.nav-bar {
+    display: flex;
+    gap: 20px;
+}
+
+.nav-bar a {
+    text-decoration: none;
+    color: #4a5568;
+    font-weight: 500;
+    font-size: 0.9rem;
+    transition: color 0.2s ease;
+}
+
+.nav-bar a:hover {
+    color: #0056b3;
+}

@@ -1,6 +1,6 @@
 import type React from "react";
 import type { CanvasMeta } from "../../../models/CanvasModels";
-
+import "./CanvasMetaForm.css"
 
 interface CanvasMetaFormProps {
     value: CanvasMeta;
@@ -9,9 +9,9 @@ interface CanvasMetaFormProps {
 
 const CanvasMetaForm = ({value, onChange}: CanvasMetaFormProps)=> {
     return(
-        <fieldset>
+        <fieldset className="canvas-form">
             <legend className="sr-only">Canvas Info</legend>
-            <div className="field-group">
+            <div className="canvas-form__group">
                 <label htmlFor="canvas-name">Name</label>
                 <input
                     id="canvas-name"
@@ -19,6 +19,8 @@ const CanvasMetaForm = ({value, onChange}: CanvasMetaFormProps)=> {
                     value={value.name}
                     onChange={(e) => onChange((prev) => ({...prev, name: e.target.value}))}
                 />
+            </div>
+            <div className="canvas-form__group">
                 <label htmlFor="template">Template</label>
                 <select
                     id="template" value="full_ice_rink"
@@ -26,6 +28,8 @@ const CanvasMetaForm = ({value, onChange}: CanvasMetaFormProps)=> {
                 >
                     <option value="full_ice_rink" >Full Ice Rink</option>
                 </select>
+            </div>
+            <div className="canvas-form__group">
                 <label htmlFor="visibility">Visibility</label>
                 <select
                     id="visibility"

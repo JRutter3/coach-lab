@@ -1,0 +1,45 @@
+/* Outer header spanning full width */
+.header {
+  width: 100%;
+  background-color: #ffffff;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+/* Main Flex Container */
+.header-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+  height: 64px;
+  
+  /* Flexbox Layout */
+  display: flex;
+  align-items: center;            /* Vertically centers both sides */
+  justify-content: space-between; /* Pushes left group to left, right group to right */
+}
+
+/* Left side alignment */
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-family: "Inter", system-ui, -apple-system, sans-serif;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+
+}
+
+/* Right side alignment */
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.brand-logo {
+  height: 36px;          /* Matches header proportion nicely */
+  width: auto;           /* Maintains aspect ratio */
+  object-fit: contain;   /* Ensures graphic doesn't distort */
+  display: block;        /* Removes inline bottom space alignment quirks */
+}

@@ -1,0 +1,15 @@
+.editor {
+    max-width: 1000px;
+    margin: 24px auto;
+    padding: 0 16px;
+}
+.editor__section-header h2{
+    font-size: 2.1rem;
+    color: #666;
+    margin: 0 0 16px 0;
+    font-weight: 600;
+}
+.editor__section-header{
+    display: flex;
+    align-content: flex-start;
+}

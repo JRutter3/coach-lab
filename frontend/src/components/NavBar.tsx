@@ -1,24 +1,24 @@
 import axios from "axios"
-import type React from "react"
+import "./NavBar.css"
 
 const NavBar = () => {
-    const handleLogoutClick = (e: React.MouseEvent) => {
+    const handleLogoutClick = () => {
         axios
             .post("/api/login/logout")
-            .then((resp) => {
+            .then(() => {
                 console.log("Logging out...")
             })
-            .catch((resp) => {
+            .catch(() => {
                 console.log("An unknown error has occurred")
             })
     }
 
     return(
-        <div>
+        <nav className="nav-bar">
             <a href="/dashboard">Home</a>
             <a href="/profile">Profile</a>
             <a href="/" onClick={handleLogoutClick}>Logout</a>
-        </div>
+        </nav>
     )
 }
 

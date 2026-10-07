@@ -52,7 +52,7 @@ const CanvasGallery = () => {
             )
             .then((resp) => {
                 const data: StoredCanvas = resp.data
-                window.location.href = `/canvas-drawing/${data.id}`
+                navigate(`/canvas/${data.id}`)
                 return
             })
             .catch(() => {console.log("An error occurred loading your data...")})
@@ -76,7 +76,7 @@ const CanvasGallery = () => {
     if (loading){
         return <h1>Loading...</h1>
     } else if (!user) {
-        window.location.href = "/"
+        navigate("/")
         return <h1>Log in!</h1>
     }
     return(

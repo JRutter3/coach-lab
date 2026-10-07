@@ -346,3 +346,16 @@ async def update_canvas_in_database(
 
     await db_session.flush()
     return StoredCanvas.model_validate(canvas, from_attributes=True)
+
+
+async def delete_canvas_from_database(
+    canvas_id: str,
+    db_session: AsyncSession,
+    deleting_user: str,
+) -> None:
+    """Deletes a canvas from the database."""
+    canvas = await _get_raw_canvas(canvas_id, db_session)
+    if deleting_user != canvas.owner_id:
+        raise PermissionError(f"User {deleting_user} cannot delete canvas belonging to {canvas.owner_id}")
+    await db_session.delete(canvas)
+    

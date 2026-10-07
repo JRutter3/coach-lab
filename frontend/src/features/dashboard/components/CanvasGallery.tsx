@@ -2,13 +2,17 @@ import React, { useEffect, useState } from "react"
 import { type StoredCanvas, type CanvasSubmission } from "../../../models/CanvasModels"
 import axios from "axios"
 import { useAuth } from "../../../components/AuthContext"
+import "./CanvasGallery.css"
+import DrillCard from "./DrillCard"
+import { useNavigate } from "react-router-dom"
 
 const CanvasGallery = () => {
     
-    const [canvasList, canvasListSetter] = useState<StoredCanvas[]>([])
+    const [canvasList, setCanvasList] = useState<StoredCanvas[]>([])
     const [message, setMessage] = useState("")
     const [isLoading, setIsLoading] = useState(false)
     const {user, loading} = useAuth()
+    const navigate = useNavigate()
     const loadCanvasList = () => {
         try {
             setMessage("Loading...")
@@ -20,7 +24,7 @@ const CanvasGallery = () => {
                 })
                 .then((resp) => {
                     const data: StoredCanvas[] = resp.data
-                    canvasListSetter(data)
+                    setCanvasList(data)
                 })
                 .catch(() => {
                     console.log("An error occurred fetching ")
@@ -39,7 +43,6 @@ const CanvasGallery = () => {
             template: "full_hockey_rink",
             data: {lines: [], shapes: []},
             visibility: "private",
-            owner_id: user.id,
         }
         axios
             .post(
@@ -49,42 +52,54 @@ const CanvasGallery = () => {
             )
             .then((resp) => {
                 const data: StoredCanvas = resp.data
-                window.location.href = `/canvas-drawing/${data.id}`
+                navigate(`/canvas/${data.id}`)
                 return
             })
             .catch(() => {console.log("An error occurred loading your data...")})
+    }
+
+    const onCardDelete = (drillId: string) => {
+        axios
+            .delete(
+                `api/v1/canvas-drawing/${drillId}/`, 
+                {withCredentials: true},
+            )
+            .then(() => setCanvasList(canvasList.filter((drill) => drill.id !== drillId)))
+            .catch(() => console.error("An error occurred deleting drill:", drillId))
+    }
+
+    const onEdit = (drillId: string) => {
+        navigate(`/canvas/${drillId}`)
     }
 
     useEffect(loadCanvasList, [])
     if (loading){
         return <h1>Loading...</h1>
     } else if (!user) {
-        window.location.href = "/"
+        navigate("/")
         return <h1>Log in!</h1>
     }
     return(
-        <div className="canvas-gallery">
-            {isLoading && <h3>{message}</h3>}
-            <button onClick={handleNewCanvas}>New Canvas</button>
-            <table>
-                <thead>
-                    <tr><th>Name</th><th>Template</th><th>Created At</th></tr>
-                </thead>
-                <tbody>                
-                {
-                    canvasList.map((item) => {
-                        return(
-                            <tr key={item.id}>
-                                <td><a href={`/canvas/${item.id}`}>{item.name}</a></td>
-                                <td>{item.template}</td>
-                                <td>{item.createdAt.toString()}</td>
-                            </tr>
-                        )
-                    })
-                }
-                </tbody>
-            </table>
-        </div>
+        <section className="canvas-gallery">
+            <div className="gallery-header">
+                <h1>My Drills Gallery</h1>
+                {isLoading && <h1>{message}</h1>}
+                <button className="gallery-btn" onClick={handleNewCanvas}>+ Create New Drill</button>
+            </div>
+            <div className="cards-grid">
+                {canvasList.map(
+                    (drill) => {
+                        console.log(drill)
+                        return <DrillCard
+                            key={drill.id}
+                            drill={drill}
+                            onEdit={onEdit}
+                            onDelete={onCardDelete}
+                        />
+                    }
+                    )}
+            </div>
+        </section>
     )
 }
 

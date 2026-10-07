@@ -15,7 +15,7 @@ const App = () => {
             <Route path="/" element={<LoginPage/>}/>
             <Route path="/register" element={<RegistrationForm/>}/>
             <Route path="/dashboard" element={<DashboardPage/>}/>
-            <Route path="/canvas/:canvasId" element={<CanvasEditorPage canvasId="TEST"/>} />
+            <Route path="/canvas/:canvasId" element={<CanvasEditorPage />} />
         </Routes>
       </BrowserRouter>
     </AuthProvider>

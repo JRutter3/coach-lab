@@ -1,0 +1,23 @@
+.canvas-editor {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.canvas-editor__meta {
+    width: 100%;
+}
+
+.canvas-editor__workspace {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 0;
+}
+
+.canvas-editor__actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 4px;
+    justify-content: center;
+}

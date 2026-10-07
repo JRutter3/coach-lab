@@ -4,6 +4,7 @@ import CanvasMetaForm from "./CanvasMetaForm";
 import { type CanvasMeta, type CanvasData, type CanvasSubmission, type StoredCanvas } from "../../../models/CanvasModels";
 import Palette from "./Palette";
 import axios from "axios";
+import "./CanvasEditor.css"
 
 const submitCanvasPayload = async (
     canvasMetaData: CanvasMeta,
@@ -99,12 +100,18 @@ const CanvasEditor = ({canvasId}: {canvasId: string}) => {
     if (isLoading) return <div>Loading editor...</div>;
 
     return (
-        <form onSubmit={onSubmit}>
-            <Palette activeTool={activeTool} toolSetter={toolSetter} />
-            <CanvasMetaForm value={canvasMeta} onChange={setCanvasMeta} />
-            <CanvasDrawingArea ref={canvasRef} tool={activeTool} initialData={initialData} />
-            <button type="submit">Submit</button>
-            <button type="button" onClick={onClear}>Clear</button>
+        <form onSubmit={onSubmit} className="canvas-editor">
+            <div className="canvas-editor__meta">
+                <CanvasMetaForm value={canvasMeta} onChange={setCanvasMeta} />
+            </div>
+            <div className="canvas-editor__workspace">
+                <Palette activeTool={activeTool} toolSetter={toolSetter} />
+                <CanvasDrawingArea ref={canvasRef} tool={activeTool} initialData={initialData} />
+            </div>
+            <div className="canvas-editor__actions">
+                <button type="submit">Submit</button>
+                <button type="button" onClick={onClear}>Clear</button>
+            </div>
         </form>
     )
 }

@@ -1,0 +1,108 @@
+.gallery-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 2rem;
+    font-family: "Inter", system-ui, -apple-system, sans-serif;
+}
+
+.gallery-header h1 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #0f172a;
+    margin: 0;
+}
+
+.gallery-btn {
+  background-color: #2563eb; /* Primary Accent Blue */
+  color: #ffffff;
+  font-family: inherit;
+  font-size: 0.875rem;       /* 14px */
+  font-weight: 600;
+  padding: 0.625rem 1.25rem;
+  border-radius: 0.5rem;      /* Rounded card corners */
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.15s ease, transform 0.1s ease;
+}
+
+.gallery-btn:hover {
+  background-color: #1d4ed8;
+}
+
+.gallery-btn:active {
+  transform: scale(0.98);
+}
+
+.gallery-btn-grey {
+    background-color: #64748b;
+    font-family: inherit;
+    padding: 0.635rem 1.25rem;
+    border-radius: 0.5rem;
+    border: nont;
+    cursor: pointer;
+    transition: color 0.15s ease, background-color 0.15s ease;
+}
+
+.gallery-btn-grey:hover {
+    color: #0f172a;
+    background-color: #f1f5f9;
+}
+.gallery-btn-grey.btn-danger:hover {
+    color: #dc2626;
+    background-color: #fef2f2;
+}
+/* Responsive Card Grid */
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+/* Individual Drill Card Shell */
+.drill-card {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.75rem;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+}
+
+.drill-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.08);
+  border-color: #cbd5e1;
+}
+
+/* Thumbnail Section */
+.card-preview {
+  aspect-ratio: 16 / 9;
+  background-color: #f1f5f9;
+  border-bottom: 1px solid #f1f5f9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem;
+}
+
+/* Card Information Body */
+.card-body {
+  padding: 1rem;
+  flex: 1; /* Ensures buttons align across cards of different content heights */
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  color: #0f172a;
+  margin: 0;
+}
+
+/* Footer & Actions */
+.card-actions {
+  padding: 0.75rem 1rem 1rem 1rem;
+  border-top: 1px solid #f1f5f9;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}

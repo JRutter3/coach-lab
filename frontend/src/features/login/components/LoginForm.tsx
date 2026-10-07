@@ -40,8 +40,9 @@ const LoginForm = () => {
         <div className="login-container">
             <form onSubmit={handleSubmit} className="login-form">
                 <div className="form-group">
-                    <label>E-Mail</label>
+                    <label htmlFor="email-input">E-Mail</label>
                     <input
+                        id="email-input"
                         type="email"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
@@ -50,8 +51,9 @@ const LoginForm = () => {
                     />
                 </div>
                 <div className="form-group">
-                    <label>Password</label>
+                    <label htmlFor="password-input">Password</label>
                     <input
+                        id="password-input"
                         type="password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
@@ -60,11 +62,11 @@ const LoginForm = () => {
                     />
                 </div>
                 { error && <p className="error">{error}</p> }
-                <div className="form-group">
-                    <button type="submit" disabled={loading}>
+                <div className="form-actions">
+                    <button type="submit" disabled={loading} className='btn-primary'>
                         {loading ? "Signing in..." : "Sign in"}
                     </button>
-                    <button type="button" onClick={() => window.location.href="/register"}>
+                    <button className="btn-secondary" type="button" onClick={() => window.location.href="/register"}>
                         Sign-Up
                     </button>
                 </div>

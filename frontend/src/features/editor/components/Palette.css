@@ -1,0 +1,76 @@
+.palette {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    width: 112px;
+    padding: 8px;
+    background-color: #f0f0f0;
+    border-right: 1px solid #ccc;
+    user-select: none;
+}
+
+.palette__group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 8px 6px 6px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    background-color: #fafafa;
+}
+
+.palette__group-label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #888;
+    padding: 0 2px 4px;
+    border-bottom: 1px solid #ddd;
+    margin-bottom: 2px;
+}
+
+.palette__grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4px;
+}
+
+.palette__tool-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    aspect-ratio: 1;
+    padding: 0;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.1s ease, border-color 0.1s ease, transform 0.1s ease;
+}
+
+.palette__tool-btn:hover {
+    background-color: #e8e8e8;
+    border-color: #aaa;
+}
+
+.palette__tool-btn:active {
+    transform: scale(0.93);
+}
+
+.palette__tool-btn--active {
+    background-color: #daeeff;
+    border-color: #007acc;
+    box-shadow: 0 0 0 1px #007acc33;
+}
+
+.palette__tool-btn--active:hover {
+    background-color: #c5e4f8;
+}
+
+.palette__tool-icon {
+    font-size: 20px;
+    line-height: 1;
+    pointer-events: none;
+}

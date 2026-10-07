@@ -1,0 +1,140 @@
+/* Centered Full-Page Shell */
+.login-wrapper {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f8fafc;
+  padding: 1.5rem;
+}
+
+/* Card Container */
+.login-card {
+  width: 100%;
+  max-width: 400px;
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.75rem;
+  padding: 2.5rem 2rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+  box-sizing: border-box;
+}
+
+/* Brand Identity Header */
+.login-brand {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.login-brand img {
+  width: 100%;
+  background-color: #0f172a;
+  border-radius: 0.5rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0.75rem;
+}
+
+.brand-icon {
+  width: 2rem;
+  height: 2rem;
+}
+
+.login-title {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: #0f172a;
+  letter-spacing: 0.05em;
+  margin: 0;
+}
+
+.login-subtitle {
+  font-size: 0.875rem;
+  color: #64748b;
+  margin-top: 0.375rem;
+}
+
+/* Form Container & Vertical Stacking */
+.login-form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem; /* Spacing between form fields */
+}
+
+/* Individual Field Group */
+.form-group {
+  display: flex;
+  flex-direction: column; /* Forces label on top, input below */
+  align-items: stretch;  /* Keeps labels left-aligned */
+  gap: 0.5rem;             /* Fixed gap between label and input */
+}
+
+/* Label Styling */
+.login-form label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #334155;
+  text-align: left;
+}
+
+/* Input Box Styling */
+.login-form input {
+  width: 100%;
+  padding: 0.625rem 0.875rem;
+  font-size: 0.875rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 0.375rem;
+  outline: none;
+  box-sizing: border-box; /* Ensures padding doesn't widen the input */
+}
+
+.form-input:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+
+/* Action Buttons Group */
+.form-actions {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+  width: 100%
+}
+
+.btn-primary {
+  flex: 1;
+  background-color: #0f172a; /* Slate 900 */
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 0.875rem;
+  padding: 0.625rem;
+  border-radius: 0.375rem;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.btn-primary:hover {
+  background-color: #1e293b;
+}
+
+.btn-secondary {
+  flex: 1;
+  background-color: transparent;
+  color: #0f172a;
+  font-weight: 600;
+  font-size: 0.875rem;
+  padding: 0.625rem;
+  border-radius: 0.375rem;
+  border: 1px solid #cbd5e1;
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.btn-secondary:hover {
+  background-color: #f8fafc;
+  border-color: #94a3b8;
+}

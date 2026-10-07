@@ -1,5 +1,6 @@
 from database.db_tools import (
     DataNotFoundError,
+    delete_canvas_from_database,
     get_canvas_from_database,
     query_canvas_by_owner,
     update_canvas_in_database,
@@ -7,7 +8,7 @@ from database.db_tools import (
 )
 from fastapi import APIRouter, HTTPException
 
-from api.api_models import CanvasSubmission, CanvasUpdate, StoredCanvas
+from api.api_models import CanvasSubmission, CanvasUpdate, MessageResponse, StoredCanvas
 from api.dependencies import AuthData, DBSession
 
 canvas_router = APIRouter(
@@ -62,3 +63,13 @@ async def put_canvas(
         raise HTTPException(404, f"No canvas with id: {canvas_id} found.")
 
     return result
+
+@canvas_router.delete("/{canvas_id}")
+async def delete_canvas(
+    canvas_id: str,
+    user_data: AuthData,
+    db_session: DBSession,
+) -> MessageResponse:
+    """Delete a canvas by ID"""
+    await delete_canvas_from_database(canvas_id, db_session, user_data.id)
+    return MessageResponse(message=f"Canvas {canvas_id} successfully deleted.")

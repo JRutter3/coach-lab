@@ -12,6 +12,10 @@ class SQLiteConfig(BaseSettings):
     def cnn_str(self) -> str:
         return f"sqlite+aiosqlite:///{self.db_url}"
 
+    @property
+    def sync_cnn_str(self) -> str:
+        return f"sqlite:///{self.db_url}"
+
 class JWTSettings(BaseSettings):
     secret_key: str
     jwt_algorithm: str = "HS256"

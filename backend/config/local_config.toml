@@ -1,5 +1,5 @@
 [db_settings]
-db_url="./backend/data/coach-lab.db"
+# db_url="./backend/data/coach-lab.db"
 db_type="sqlite"
 
 [jwt_settings]

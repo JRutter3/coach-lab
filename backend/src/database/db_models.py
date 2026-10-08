@@ -103,6 +103,7 @@ class Canvas(Base):
     group_id: Mapped[str] = mapped_column(ForeignKey("groups.id"), nullable=True)
     org_id: Mapped[str] = mapped_column(ForeignKey("orgs.id"), nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(), server_default=func.now())
+    thumbnail_url: Mapped[str] = mapped_column(String(255), nullable=True)
 
     __table_args__ = (
         CheckConstraint(

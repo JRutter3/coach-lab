@@ -1,5 +1,6 @@
 import axios from "axios"
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 interface RegistrationData {
     email: string
@@ -13,7 +14,7 @@ const RegistrationForm = () => {
     )
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null)
-    
+    const navigate = useNavigate()
     const handleSubmit = async (e: React.SubmitEvent) => {
         e.preventDefault()
         setLoading(true)
@@ -29,12 +30,12 @@ const RegistrationForm = () => {
                 }
             )
 
-            if (!(res.status === 422)) {
+            if ((res.status === 422)) {
                 setError("Malformed request")
                 return
             }
 
-            window.location.href = "/"
+            navigate("/")
         } catch {
             setError("Something went wrong. Please try again")
         } finally {
